@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# プログラム実行に必要なライブラリを取り込む
+# プログラム実行に必要なライブラリを読み込む
 import os
 import numpy as np
 from numpy import linalg as LA
@@ -26,7 +26,6 @@ def myPLS2_vip(X, Y, m, mode):
     # 初期化
     [n, k] = X.shape
     [q, d] = Y.shape
-
     E      = 0.01
     n2     = 1
    
@@ -55,7 +54,7 @@ def myPLS2_vip(X, Y, m, mode):
     # ------------- ループ -------------
     j = 0
     while j < m:
-        print(j)
+        #print(j)
         # ------------ Step1 -------------s
         # ウェイトベクトルwの初期化
         wj              = np.zeros((k, 1))
@@ -123,12 +122,13 @@ def myPLS2_vip(X, Y, m, mode):
                 g = 0.0
                 j = 0
                 while j < m:
-                    # f = f + np.power(W[n1, j], 2) * np.var(ss[:, n2, j])
-                    # g = g + np.var([ss[:, n2, j]])
-                    f  = f + np.power(W[n1, j], 2) * np.var(T[:, j] * a[j, n2])
-                    g  = g + np.var(T[:, j] * a[j, n2])
-                    j += 1
-                vip[n1, n2]  = np.sqrt((k * f) / g)
+                    # f = f + np.dot(np.power(W[n1, j], 2), np.var(ss[:, n2, j]))
+                    # g = g + np.var(ss[:, n2, j])
+                    f        = f + np.dot(np.power(W[n1, j], 2), np.var(np.dot(T[:, j], a[j, n2])))
+                    g        = g + np.var(T[:, j] * a[j, n2])
+                    j       += 1
+                vip_tmp      = np.divide(np.dot(k, f), g)
+                vip[n1, n2]  = np.sqrt(vip_tmp)
                 n2          += 1
             n1 += 1
     else:
